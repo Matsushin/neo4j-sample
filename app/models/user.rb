@@ -8,7 +8,7 @@ class User < ApplicationRecord
 
   after_create :create_node
   after_update :update_node
-
+  after_destroy :destroy_node
 
   def create_node
     connect_neo4j
@@ -24,6 +24,13 @@ class User < ApplicationRecord
     @neo.set_node_properties(user_node, { age: date_of_birth_age} ) if date_of_birth_changed?
     user_node.rels(:KNOWS).outgoing.each { |relation| relation.del } # リレーション全削除
     create_relationship(user_node)
+  end
+
+  def destroy_node
+    connect_neo4j
+    user_node = Neography::Node.find('user_index', 'user_id', id)
+    user_node.rels(:KNOWS).outgoing.each { |relation| relation.del } # リレーション全削除
+    user_node.del
   end
 
   def friend_of_friend
