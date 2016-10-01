@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 gem 'rails', '~> 5.0.0', '>= 5.0.0.1'
 gem 'sqlite3'
 gem 'puma', '~> 3.0'
+gem 'bootstrap-sass'
 gem 'sass-rails', '~> 5.0'
 gem 'uglifier', '>= 1.3.0'
 gem 'coffee-rails', '~> 4.2'
@@ -12,7 +13,8 @@ gem 'jbuilder', '~> 2.5'
 gem 'haml-rails'
 gem 'neo4j'
 gem 'neography'
-gem 'devise'
+gem 'birthday'
+gem 'simple_form'
 
 group :development, :test do
   gem 'byebug', platform: :mri

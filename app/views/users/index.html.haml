@@ -1,0 +1,26 @@
+%h1 ユーザ一覧
+
+.pull-right
+  = link_to 'ユーザ追加', new_user_path, class: 'btn btn-default'
+
+%table.table.table-striped
+  %thead
+    %tr
+      %th 名前
+      %th 友達
+      %th 友達の友達
+      %th 年齢
+      %th
+      %th
+
+  %tbody
+    - @users.each do |user|
+      %tr
+        %td= user.name
+        %td
+          = user.follows.order(:id).map { |friend| friend.name }.join(', ')
+        %td
+          = user.friend_of_friend.map { |friend| friend.name }.join(', ')
+        %td #{user.date_of_birth_age}才
+        %td= link_to '編集', edit_user_path(user)
+        %td= link_to '削除', user, method: :delete, data: { confirm:'本当に削除しますか?' }

@@ -1,0 +1,9 @@
+ja:
+  activerecord:
+    models:
+      user: ユーザ
+    attributes:
+      user:
+        name: 名前
+        date_of_birth: 生年月日
+        age: 年齢
