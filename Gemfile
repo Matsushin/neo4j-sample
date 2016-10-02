@@ -1,7 +1,6 @@
 source 'https://rubygems.org'
 
 gem 'rails', '~> 5.0.0', '>= 5.0.0.1'
-gem 'sqlite3'
 gem 'puma', '~> 3.0'
 gem 'bootstrap-sass'
 gem 'sass-rails', '~> 5.0'
@@ -17,6 +16,7 @@ gem 'birthday'
 gem 'simple_form'
 
 group :development, :test do
+  gem 'sqlite3'
   gem 'byebug', platform: :mri
 end
 
@@ -26,6 +26,10 @@ group :development do
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
   gem 'erb2haml'
+end
+
+group :production do
+  gem 'pg'
 end
 
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
