@@ -12,14 +12,14 @@ class User < ApplicationRecord
 
   def create_node
     user_node = Neography::Node.create({ user_id: id, name: name, age: date_of_birth_age })
-    @neo.add_label(user_node, 'User')
+    neo4j_connect.add_label(user_node, 'User')
     user_node.add_to_index('user_index', 'user_id', id)
     create_relationship(user_node)
   end
 
   def update_node
     user_node = Neography::Node.find('user_index', 'user_id', id)
-    @neo.set_node_properties(user_node, { age: date_of_birth_age} ) if date_of_birth_changed?
+    user_node[:age] = date_of_birth_age if date_of_birth_changed?
     user_node.rels(:FRIEND).outgoing.each { |relation| relation.del } # リレーション全削除
     create_relationship(user_node)
   end
@@ -60,5 +60,10 @@ class User < ApplicationRecord
       friend_node = Neography::Node.find('user_index', 'user_id', follow_id)
       user_node.outgoing(:FRIEND) << friend_node
     end
+  end
+
+  def connect_neo
+    url = ENV['GRAPHENEDB_URL'] || 'http://neo4j:password@localhost:7474'
+    Neography::Rest.new(url)
   end
 end
