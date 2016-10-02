@@ -11,7 +11,6 @@ class User < ApplicationRecord
   after_destroy :destroy_node
 
   def create_node
-    connect_neo4j
     user_node = Neography::Node.create({ user_id: id, name: name, age: date_of_birth_age })
     @neo.add_label(user_node, 'User')
     user_node.add_to_index('user_index', 'user_id', id)
@@ -19,7 +18,6 @@ class User < ApplicationRecord
   end
 
   def update_node
-    connect_neo4j
     user_node = Neography::Node.find('user_index', 'user_id', id)
     @neo.set_node_properties(user_node, { age: date_of_birth_age} ) if date_of_birth_changed?
     user_node.rels(:FRIEND).outgoing.each { |relation| relation.del } # リレーション全削除
@@ -27,14 +25,12 @@ class User < ApplicationRecord
   end
 
   def destroy_node
-    connect_neo4j
     user_node = Neography::Node.find('user_index', 'user_id', id)
     user_node.rels(:FRIEND).outgoing.each { |relation| relation.del } # リレーション全削除
     user_node.del
   end
 
   def friend_of_friend
-    connect_neo4j
     user_node = Neography::Node.find('user_index', 'user_id', id)
     users = User.hash_by_id
     user_node
@@ -64,13 +60,5 @@ class User < ApplicationRecord
       friend_node = Neography::Node.find('user_index', 'user_id', follow_id)
       user_node.outgoing(:FRIEND) << friend_node
     end
-  end
-
-  def connect_neo4j
-    @neo = Neography::Rest.new({
-      authentication: 'basic',
-      username: 'neo4j',
-      password: 'password'
-    })
   end
 end
