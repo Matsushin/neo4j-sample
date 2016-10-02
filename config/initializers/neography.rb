@@ -9,7 +9,7 @@ Neography.configure do |config|
   config.log_enabled    = false
   config.max_threads    = 20
   config.authentication = 'basic'  # 'basic' or 'digest'
-  config.username       = "app57363794-nzRyWS" || 'neo4j' # ENV["GRAPHENEDB_BOLT_USER"]
-  config.password       = "oMzcwUeW340J81SuDN1F" || 'password' # ENV["GRAPHENEDB_BOLT_PASSWORD"]
+  config.username       = ENV["GRAPHENEDB_BOLT_USER"] || 'neo4j'
+  config.password       = ENV["GRAPHENEDB_BOLT_PASSWORD"] || 'password'
   config.parser         = MultiJsonParser
 end
