@@ -1,7 +1,7 @@
 
 Neography.configure do |config|
   config.server         = ENV["GRAPHENEDB_BOLT_SERVER"] || "localhost"
-  config.port           = 24789 || "7474" # ENV["GRAPHENEDB_PORT"]
+  config.port           = ENV["GRAPHENEDB_PORT"] || "7474"
   config.directory      = ""  # prefix this path with '/'
   config.cypher_path    = "/cypher"
   config.gremlin_path   = "/ext/GremlinPlugin/graphdb/execute_script"
