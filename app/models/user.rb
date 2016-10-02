@@ -62,7 +62,7 @@ class User < ApplicationRecord
     end
   end
 
-  def connect_neo
+  def neo4j_connect
     url = ENV['GRAPHENEDB_URL'] || 'http://neo4j:password@localhost:7474'
     Neography::Rest.new(url)
   end
