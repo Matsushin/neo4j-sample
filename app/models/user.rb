@@ -22,27 +22,28 @@ class User < ApplicationRecord
     connect_neo4j
     user_node = Neography::Node.find('user_index', 'user_id', id)
     @neo.set_node_properties(user_node, { age: date_of_birth_age} ) if date_of_birth_changed?
-    user_node.rels(:KNOWS).outgoing.each { |relation| relation.del } # リレーション全削除
+    user_node.rels(:FRIEND).outgoing.each { |relation| relation.del } # リレーション全削除
     create_relationship(user_node)
   end
 
   def destroy_node
     connect_neo4j
     user_node = Neography::Node.find('user_index', 'user_id', id)
-    user_node.rels(:KNOWS).outgoing.each { |relation| relation.del } # リレーション全削除
+    user_node.rels(:FRIEND).outgoing.each { |relation| relation.del } # リレーション全削除
     user_node.del
   end
 
   def friend_of_friend
     connect_neo4j
     user_node = Neography::Node.find('user_index', 'user_id', id)
+    users = User.hash_by_id
     user_node
-      .outgoing(:KNOWS)
+      .outgoing(:FRIEND)
       .depth(2)
       .uniqueness(:nodeglobal)
       .filter("position.length() == 2;")
       .map do |n|
-        User.find(n[:user_id]) unless friend_ids.include?(n[:user_id])
+        users[n[:user_id]] unless friend_ids.include?(n[:user_id])
        end.compact
   end
 
@@ -50,20 +51,26 @@ class User < ApplicationRecord
     follows.pluck(:id)
   end
 
+  def self.hash_by_id
+    users = {}
+    User.order(:id).each { |user| users[user.id] = user }
+    users
+  end
+
   private
 
   def create_relationship(user_node)
     follow_ids.each do |follow_id|
       friend_node = Neography::Node.find('user_index', 'user_id', follow_id)
-      user_node.outgoing(:KNOWS) << friend_node
+      user_node.outgoing(:FRIEND) << friend_node
     end
   end
 
   def connect_neo4j
     @neo = Neography::Rest.new({
-                                authentication: 'basic',
-                                username: 'neo4j',
-                                password: 'password'
-                              })
+      authentication: 'basic',
+      username: 'neo4j',
+      password: 'password'
+    })
   end
 end
