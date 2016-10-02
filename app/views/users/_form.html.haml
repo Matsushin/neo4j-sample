@@ -9,12 +9,13 @@
   .form-group
     = f.input :name, input_html: { class: 'fit-input' }
   .form-group
-    = f.input :date_of_birth, as: :date, start_year: 1980
+    = f.input :date_of_birth, as: :date, start_year: 1970
   .form-group
     = f.label '友達'
-    - User.where.not(id: @user.id).order(:id).each do |user|
-      = f.check_box :follow_ids, { multiple: true, }, user.id, false
-      = f.label "follow_ids_#{user.id}", user.name
+    %div
+      - User.where.not(id: @user.id).order(:id).each do |user|
+        = f.check_box :follow_ids, { multiple: true, }, user.id, false
+        = f.label "follow_ids_#{user.id}", user.name
 
   .actions
     = f.submit '更新', class: 'btn btn-primary'

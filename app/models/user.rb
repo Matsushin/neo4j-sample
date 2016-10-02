@@ -11,27 +11,28 @@ class User < ApplicationRecord
   after_destroy :destroy_node
 
   def create_node
-    user_node = Neography::Node.create({ user_id: id, name: name, age: date_of_birth_age })
-    neo4j_connect.add_label(user_node, 'User')
-    user_node.add_to_index('user_index', 'user_id', id)
+    user_node = Neography::Node.create({ user_id: id, name: name, age: date_of_birth_age }) # ノード追加
+    neo4j_connect.add_label(user_node, 'User')  # ラベル追加
+    user_node.add_to_index('user_index', 'user_id', id) # 検索用にインデックス追加
     create_relationship(user_node)
   end
 
   def update_node
-    user_node = Neography::Node.find('user_index', 'user_id', id)
+    user_node = user_node(id)
+    user_node[:name] = name if name_changed?
     user_node[:age] = date_of_birth_age if date_of_birth_changed?
     user_node.rels(:FRIEND).outgoing.each { |relation| relation.del } # リレーション全削除
     create_relationship(user_node)
   end
 
   def destroy_node
-    user_node = Neography::Node.find('user_index', 'user_id', id)
+    user_node = user_node(id)
     user_node.rels(:FRIEND).outgoing.each { |relation| relation.del } # リレーション全削除
-    user_node.del
+    user_node.del # ノード削除
   end
 
   def friend_of_friend
-    user_node = Neography::Node.find('user_index', 'user_id', id)
+    user_node = user_node(id)
     users = User.hash_by_id
     user_node
       .outgoing(:FRIEND)
@@ -41,6 +42,11 @@ class User < ApplicationRecord
       .map do |n|
         users[n[:user_id]] unless friend_ids.include?(n[:user_id])
        end.compact
+  end
+
+  def user_node(id)
+    # ノード検索
+    Neography::Node.find('user_index', 'user_id', id)
   end
 
   def friend_ids
