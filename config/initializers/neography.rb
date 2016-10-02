@@ -1,6 +1,6 @@
 
 Neography.configure do |config|
-  config.server         = ENV["GRAPHENEDB_BOLT_SERVER"] || "localhost"
+  config.server         = "hobby-cagbfjhcfnhggbkecdimgfnl.dbs.graphenedb.com" || "localhost" # ENV["GRAPHENEDB_BOLT_SERVER"]
   config.port           = ENV["GRAPHENEDB_PORT"] || "7474"
   config.directory      = ""  # prefix this path with '/'
   config.cypher_path    = "/cypher"
